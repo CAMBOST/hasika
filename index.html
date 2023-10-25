@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KHMER WEDDING</title>
+  <style>
+    #search-bar {
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+    }
+    #results {
+      margin-top: 10px;
+    }
+    #results table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 2px solid gold;
+    }
+    #results th,
+    #results td {
+      padding: 5px;
+      border: 2px solid gold;
+    }
+
+    body {
+      background-image: url(https://img.freepik.com/free-photo/abstract-blur-shopping-mall_1203-8480.jpg?t=st=1698154009~exp=1698154609~hmac=075eb77272085ef2cfa635c9a718b8508c5c8c8cf9df93966656f51d269f042f);
+      background-size: cover;
+      background-position: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="search-bar">
+    <input type="text" id="search-input" placeholder="Enter keyword...">
+    <button onclick="search()">Search</button>
+    <button onclick="clearSearch()">Clear</button>
+  </div>
+  <div id="results"></div>
+
+  <script>
+    var data = []; // Variable to store the fetched data
+
+    function fetchAndDisplayData() {
+      var url = 'https://api.sheety.co/637dfb38751b8d45cf08ca224f82311e/weendingCode/sheet1';
+
+      fetch(url)
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(responseData) {
+          data = responseData.sheet1; // Store the fetched data
+          displayResults(data);
+        })
+        .catch(function(error) {
+          console.log('Error:', error);
+        });
+    }
+
+    function search() {
+      var keyword = document.getElementById('search-input').value;
+      var filteredData = data.filter(function(item) {
+        for (var key in item) {
+          if (item.hasOwnProperty(key) && item[key].toString().toLowerCase().includes(keyword.toLowerCase())) {
+            return true;
+          }
+        }
+        return false;
+      });
+      displayResults(filteredData);
+    }
+
+    function displayResults(data) {
+  var resultsContainer = document.getElementById('results');
+  resultsContainer.innerHTML = '';
+
+  if (data.length > 0) {
+    var table = document.createElement('table');
+    var headerRow = document.createElement('tr');
+    var headers = Object.keys(data[0]);
+
+    headers.forEach(function(header) {
+      if (header !== 'id') { // Exclude the 'id' column
+        var th = document.createElement('th');
+        th.textContent = header;
+        headerRow.appendChild(th);
+      }
+    });
+
+    table.appendChild(headerRow);
+
+    data.forEach(function(item) {
+      var row = document.createElement('tr');
+
+      headers.forEach(function(header) {
+        if (header !== 'id') { // Exclude the 'id' column
+          var cell = document.createElement('td');
+          cell.textContent = item[header];
+          row.appendChild(cell);
+        }
+      });
+
+      table.appendChild(row);
+    });
+
+    resultsContainer.appendChild(table);
+  } else {
+    resultsContainer.textContent = 'No results found.';
+  }
+}
+
+    function clearSearch() {
+      document.getElementById('search-input').value = '';
+      displayResults(data); // Display all data when the search is cleared
+    }
+
+    // Fetch and display data when the page loads
+    fetchAndDisplayData();
+  </script>
+</body>
+</html>
